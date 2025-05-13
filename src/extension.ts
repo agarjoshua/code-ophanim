@@ -301,348 +301,382 @@ class DjangoVisualizerPanel {
         this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
     }
 
-    
-
     private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
-        
-        return `
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Django Project Visualizer</title>
-            <style>
-                body {
-                    margin: 0;
-                    padding: 0;
-                    overflow: hidden;
-                    background-color: var(--vscode-editor-background);
-                    color: var(--vscode-editor-foreground);
-                    font-family: var(--vscode-font-family);
-                }
-                
-                #controls {
-                    position: absolute;
-                    top: 10px;
-                    left: 10px;
-                    z-index: 10;
-                }
-                
-                #graph {
-                    width: 100vw;
-                    height: 100vh;
-                }
-                
-                .node {
-                    cursor: pointer;
-                }
-                
-                .node circle {
-                    stroke-width: 2px;
-                }
-                
-                .node.class circle {
-                    fill: #6baed6;
-                    stroke: #3182bd;
-                }
-                
-                .node.function circle {
-                    fill: #74c476;
-                    stroke: #31a354;
-                }
-                
-                .node.method circle {
-                    fill: #9ecae1;
-                    stroke: #6baed6;
-                }
-                
-                .node.url circle {
-                    fill: #fd8d3c;
-                    stroke: #e6550d;
-                }
-                
-                .link {
-                    stroke: #999;
-                    stroke-opacity: 0.6;
-                }
-                
-                .link.routes-to {
-                    stroke: #e6550d;
-                    stroke-width: 2px;
-                }
-                
-                .link.contains {
-                    stroke-dasharray: 5;
-                }
-                
-                text {
-                    font-size: 12px;
-                    fill: var(--vscode-editor-foreground);
-                }
-                
-                .tooltip {
-                    position: absolute;
-                    padding: 8px;
-                    background-color: var(--vscode-editor-widget-background);
-                    color: var(--vscode-editor-foreground);
-                    border: 1px solid var(--vscode-widget-border);
-                    border-radius: 4px;
-                    pointer-events: none;
-                    opacity: 0;
-                }
-                
-                #legend {
-                    position: absolute;
-                    bottom: 20px;
-                    right: 20px;
-                    background-color: var(--vscode-editor-widget-background);
-                    border: 1px solid var(--vscode-widget-border);
-                    border-radius: 4px;
-                    padding: 10px;
-                }
-                
-                .legend-item {
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 5px;
-                }
-                
-                .legend-color {
-                    width: 15px;
-                    height: 15px;
-                    border-radius: 50%;
-                    margin-right: 5px;
-                }
-            </style>
-        </head>
-        <body>
-            <div id="controls">
-                <button id="analyze-btn">Analyze Django Project</button>
-                <button id="reset-btn">Reset View</button>
+    return `
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Django Project Visualizer</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: var(--vscode-editor-background);
+                color: var(--vscode-editor-foreground);
+                font-family: var(--vscode-font-family);
+            }
+            #controls {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                z-index: 10;
+            }
+            #graph {
+                width: 100vw;
+                height: 100vh;
+            }
+            .node {
+                cursor: pointer;
+            }
+            .node circle {
+                stroke-width: 2px;
+            }
+            .node.class circle {
+                fill: #6baed6;
+                stroke: #3182bd;
+            }
+            .node.function circle {
+                fill: #74c476;
+                stroke: #31a354;
+            }
+            .node.method circle {
+                fill: #9ecae1;
+                stroke: #6baed6;
+            }
+            .node.url circle {
+                fill: #fd8d3c;
+                stroke: #e6550d;
+            }
+            .node.app circle {
+                fill: #ffffff;
+                stroke: #666;
+                opacity: 0.2;
+            }
+            .link {
+                stroke: #999;
+                stroke-opacity: 0.6;
+            }
+            .link.routes-to {
+                stroke: #e6550d;
+                stroke-width: 2px;
+            }
+            .link.contains {
+                stroke-dasharray: 5;
+            }
+            .link.app-link {
+                stroke: #ccc;
+                stroke-opacity: 0.3;
+                stroke-dasharray: 2;
+            }
+            text {
+                font-size: 12px;
+                fill: var(--vscode-editor-foreground);
+            }
+            .app-text {
+                font-size: 14px;
+                font-weight: bold;
+                fill: var(--vscode-editor-foreground);
+            }
+            .tooltip {
+                position: absolute;
+                padding: 8px;
+                background-color: var(--vscode-editor-widget-background);
+                color: var(--vscode-editor-foreground);
+                border: 1px solid var(--vscode-widget-border);
+                border-radius: 4px;
+                pointer-events: none;
+                opacity: 0;
+            }
+            #legend {
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                background-color: var(--vscode-editor-widget-background);
+                border: 1px solid var(--vscode-widget-border);
+                border-radius: 4px;
+                padding: 10px;
+            }
+            .legend-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+            }
+            .legend-color {
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                margin-right: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="controls">
+            <button id="analyze-btn">Analyze Django Project</button>
+            <button id="reset-btn">Reset View</button>
+        </div>
+        <div id="graph"></div>
+        <div class="tooltip"></div>
+        <div id="legend">
+            <h3>Legend</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #6baed6;"></div>
+                <span>Class</span>
             </div>
-            
-            <div id="graph"></div>
-            <div class="tooltip"></div>
-            
-            <div id="legend">
-                <h3>Legend</h3>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #6baed6;"></div>
-                    <span>Class</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #74c476;"></div>
-                    <span>Function</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #9ecae1;"></div>
-                    <span>Method</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #fd8d3c;"></div>
-                    <span>URL Pattern</span>
-                </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #74c476;"></div>
+                <span>Function</span>
             </div>
-            
-            <script>
-                (function() {
-                    // Get the vscode API
-                    const vscode = acquireVsCodeApi();
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #9ecae1;"></div>
+                <span>Method</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #fd8d3c;"></div>
+                <span>URL Pattern</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ffffff; border: 1px solid #666;"></div>
+                <span>App</span>
+            </div>
+        </div>
+        <script>
+            (function() {
+                const vscode = acquireVsCodeApi();
+                const d3Script = document.createElement('script');
+                d3Script.src = '${webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'd3.min.js'))}';
+                d3Script.onload = initializeApp;
+                d3Script.onerror = () => console.error('Failed to load D3 script');
+                document.head.appendChild(d3Script);
 
-                    console.log('so the vscode api is called'+vscode)
-                    // D3.js script (v7)
+                function initializeApp() {
+                    const analyzeBtn = document.getElementById('analyze-btn');
+                    const resetBtn = document.getElementById('reset-btn');
+                    const graphDiv = document.getElementById('graph');
+                    const tooltip = document.querySelector('.tooltip');
                     
-                    // const d3Script = document.createElement('script');
-                    // d3Script.src = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'd3.min.js')).toString();
-                    // d3Script.onload = initializeApp;
-                    // document.head.appendChild(d3Script);
-                    // d3Script.onerror = () => console.error('Failed to load D3 script');
-                    const d3Script = document.createElement('script');
-                    d3Script.src = '${webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'd3.min.js'))}';
-                    d3Script.onload = initializeApp;
-                    d3Script.onerror = () => console.error('Failed to load D3 script');
-                    document.head.appendChild(d3Script);
+                    let svg, simulation, link, node, zoom;
+                    let width = window.innerWidth;
+                    let height = window.innerHeight;
                     
-                    function initializeApp() {
-                        const analyzeBtn = document.getElementById('analyze-btn');
-                        const resetBtn = document.getElementById('reset-btn');
-                        const graphDiv = document.getElementById('graph');
-                        const tooltip = document.querySelector('.tooltip');
-                        
-                        let svg, simulation, link, node, zoom;
-                        let width = window.innerWidth;
-                        let height = window.innerHeight;
-                        
-                        // Create SVG container
-                        svg = d3.select('#graph')
-                            .append('svg')
-                            .attr('width', width)
-                            .attr('height', height);
-                        
-                        // Add zoom functionality
-                        zoom = d3.zoom()
-                            .scaleExtent([0.1, 10])
-                            .on('zoom', (event) => {
-                                container.attr('transform', event.transform);
+                    svg = d3.select('#graph')
+                        .append('svg')
+                        .attr('width', width)
+                        .attr('height', height);
+                    
+                    zoom = d3.zoom()
+                        .scaleExtent([0.1, 10])
+                        .on('zoom', (event) => {
+                            container.attr('transform', event.transform);
+                        });
+                    
+                    svg.call(zoom);
+                    const container = svg.append('g');
+                    
+                    window.addEventListener('resize', () => {
+                        width = window.innerWidth;
+                        height = window.innerHeight;
+                        svg.attr('width', width).attr('height', height);
+                        if (simulation) {
+                            simulation.force('center', d3.forceCenter(width / 2, height / 2));
+                            simulation.alpha(0.3).restart();
+                        }
+                    });
+                    
+                    analyzeBtn.addEventListener('click', () => {
+                        vscode.postMessage({ command: 'analyze' });
+                    });
+                    
+                    resetBtn.addEventListener('click', () => {
+                        svg.transition().duration(750).call(
+                            zoom.transform,
+                            d3.zoomIdentity
+                        );
+                        if (simulation) {
+                            simulation.nodes().forEach(node => {
+                                node.fx = null;
+                                node.fy = null;
                             });
+                            simulation.alpha(1).restart();
+                        }
+                    });
+                    
+                    window.addEventListener('message', event => {
+                        const message = event.data;
+                        if (message.command === 'updateGraph') {
+                            updateGraph(message.data);
+                        }
+                    });
+                    
+                    function updateGraph(graphData) {
+                        container.selectAll('*').remove();
                         
-                        svg.call(zoom);
+                        // Debug: Log node-to-app assignments
+                        console.log('Nodes:', graphData.nodes.map(n => ({
+                            id: n.id,
+                            name: n.name,
+                            app: n.app,
+                            type: n.type
+                        })));
                         
-                        // Create a container for all elements that will be zoomed
-                        const container = svg.append('g');
+                        // Create app nodes and intra-app links
+                        const nodesByApp = d3.group(graphData.nodes, d => d.app || 'unknown');
+                        console.log('Nodes by App:', Array.from(nodesByApp.entries()).map(([app, nodes]) => ({
+                            app,
+                            nodeCount: nodes.length,
+                            nodeNames: nodes.map(n => n.name)
+                        })));
                         
-                        // Handle window resize
-                        window.addEventListener('resize', () => {
-                            width = window.innerWidth;
-                            height = window.innerHeight;
-                            svg.attr('width', width).attr('height', height);
-                            if (simulation) {
-                                simulation.force('center', d3.forceCenter(width / 2, height / 2));
-                                simulation.alpha(0.3).restart();
-                            }
-                        });
+                        const appNodes = Array.from(nodesByApp.keys()).map((app, i) => ({
+                            id: \`app:\${app}\`,
+                            name: app,
+                            type: 'app',
+                            x: (i % 3 - 1) * 400,
+                            y: Math.floor(i / 3) * 400,
+                            fx: (i % 3 - 1) * 400,
+                            fy: Math.floor(i / 3) * 400 // Fix app nodes in place
+                        }));
                         
-                        // Button click handlers
-                        analyzeBtn.addEventListener('click', () => {
-                            console.log('so the vscode api is called'+vscode)
-                            vscode.postMessage({ command: 'analyze' });
-
-                            console.log('so the vscode api is called');
-                        });
+                        // Combine app nodes with regular nodes
+                        const allNodes = [...graphData.nodes, ...appNodes];
                         
-                        resetBtn.addEventListener('click', () => {
-                            svg.transition().duration(750).call(
-                                zoom.transform,
-                                d3.zoomIdentity
-                            );
-                        });
-                        
-                        // Listen for messages from the extension
-                        window.addEventListener('message', event => {
-                            const message = event.data;
-                            
-                            switch (message.command) {
-                                case 'updateGraph':
-                                    updateGraph(message.data);
-                                    break;
-                            }
-                        });
-                        
-                        // Function to update the graph with new data
-                        function updateGraph(graphData) {
-                            // Clear existing graph
-                            container.selectAll('*').remove();
-                            
-                            // Create the simulation
-                            simulation = d3.forceSimulation()
-                                .force('link', d3.forceLink().id(d => d.id).distance(150))
-                                .force('charge', d3.forceManyBody().strength(-500))
-                                .force('center', d3.forceCenter(width / 2, height / 2))
-                                .force('collide', d3.forceCollide().radius(60));
-                            
-                            // Create links
-                            link = container.append('g')
-                                .selectAll('line')
-                                .data(graphData.links)
-                                .enter().append('line')
-                                .attr('class', d => \`link \${d.type}\`);
-                            
-                            // Create node groups
-                            node = container.append('g')
-                                .selectAll('.node')
-                                .data(graphData.nodes)
-                                .enter().append('g')
-                                .attr('class', d => \`node \${d.type}\`)
-                                .call(d3.drag()
-                                    .on('start', dragstarted)
-                                    .on('drag', dragged)
-                                    .on('end', dragended));
-                            
-                            // Add circles to nodes
-                            node.append('circle')
-                                .attr('r', d => d.type === 'method' ? 8 : 12);
-                            
-                            // Add labels to nodes
-                            node.append('text')
-                                .attr('dy', 22)
-                                .attr('text-anchor', 'middle')
-                                .text(d => d.name.length > 20 ? d.name.substring(0, 18) + '...' : d.name);
-                            
-                            // Node interactions
-                            node.on('mouseover', function(event, d) {
-                                const tooltipContent = \`
-                                    <div><strong>\${d.name}</strong></div>
-                                    <div>Type: \${d.type}</div>
-                                    <div>File: \${d.file}</div>
-                                    <div>App: \${d.app}</div>
-                                    \${d.view ? \`<div>Routes to: \${d.view}</div>\` : ''}
-                                    \${d.parent ? \`<div>Class: \${d.parent}</div>\` : ''}
-                                    <div class="tooltip-hint">(Click to open file)</div>
-                                \`;
-                                
-                                tooltip.style.left = \`\${event.pageX + 10}px\`;
-                                tooltip.style.top = \`\${event.pageY + 10}px\`;
-                                tooltip.style.opacity = 1;
-                                tooltip.innerHTML = tooltipContent;
-                            })
-                            .on('mouseout', function() {
-                                tooltip.style.opacity = 0;
-                            })
-                            .on('click', function(event, d) {
-                                vscode.postMessage({
-                                    command: 'openFile',
-                                    file: d.file
+                        // Create intra-app links (between nodes of the same app)
+                        const intraAppLinks = [];
+                        nodesByApp.forEach((nodes, app) => {
+                            nodes.forEach((node, i) => {
+                                // Link each node to its app node
+                                intraAppLinks.push({
+                                    source: node.id,
+                                    target: \`app:\${app}\`,
+                                    type: 'app-link'
                                 });
+                                // Link nodes within the same app (optional, limited to avoid clutter)
+                                for (let j = i + 1; j < nodes.length && j < i + 3; j++) { // Limit to 2 links per node
+                                    intraAppLinks.push({
+                                        source: node.id,
+                                        target: nodes[j].id,
+                                        type: 'app-link'
+                                    });
+                                }
                             });
-                            
-                            // Update the simulation
-                            simulation
-                                .nodes(graphData.nodes)
-                                .on('tick', ticked);
-                            
-                            simulation.force('link')
-                                .links(graphData.links);
-                            
-                            // Center the view
-                            svg.call(zoom.transform, d3.zoomIdentity);
-                            
-                            // Tick function for the simulation
-                            function ticked() {
-                                link
-                                    .attr('x1', d => d.source.x)
-                                    .attr('y1', d => d.source.y)
-                                    .attr('x2', d => d.target.x)
-                                    .attr('y2', d => d.target.y);
-                                
-                                node.attr('transform', d => \`translate(\${d.x},\${d.y})\`);
+                        });
+                        
+                        // Combine all links
+                        const allLinks = [...graphData.links, ...intraAppLinks];
+                        
+                        // Initialize node positions near their app node
+                        allNodes.forEach(node => {
+                            if (node.type !== 'app' && (!node.x || !node.y)) {
+                                const appNode = appNodes.find(an => an.id === \`app:\${node.app || 'unknown'}\`);
+                                if (appNode) {
+                                    node.x = appNode.x + (Math.random() - 0.5) * 100;
+                                    node.y = appNode.y + (Math.random() - 0.5) * 100;
+                                }
                             }
+                        });
+                        
+                        // Set up simulation
+                        simulation = d3.forceSimulation()
+                            .force('link', d3.forceLink().id(d => d.id).distance(d => d.type === 'app-link' ? 100 : 50))
+                            .force('charge', d3.forceManyBody().strength(d => d.type === 'app' ? 0 : -1200)) // No repulsion for app nodes
+                            .force('center', d3.forceCenter(width / 2, height / 2))
+                            .force('collide', d3.forceCollide().radius(d => d.type === 'method' ? 15 : d.type === 'app' ? 30 : 20));
+                        
+                        link = container.append('g')
+                            .selectAll('line')
+                            .data(allLinks)
+                            .enter().append('line')
+                            .attr('class', d => \`link \${d.type}\`);
+                        
+                        node = container.append('g')
+                            .selectAll('.node')
+                            .data(allNodes)
+                            .enter().append('g')
+                            .attr('class', d => \`node \${d.type}\`)
+                            .call(d3.drag()
+                                .on('start', dragstarted)
+                                .on('drag', dragged)
+                                .on('end', dragended));
+                        
+                        node.append('circle')
+                            .attr('r', d => d.type === 'method' ? 8 : d.type === 'app' ? 20 : 12);
+                        
+                        node.append('text')
+                            .attr('dy', d => d.type === 'app' ? 5 : 22)
+                            .attr('text-anchor', 'middle')
+                            .attr('class', d => d.type === 'app' ? 'app-text' : '')
+                            .text(d => d.name.length > 20 ? d.name.substring(0, 18) + '...' : d.name);
+                        
+                        node.on('mouseover', function(event, d) {
+                            if (d.type === 'app') return; // No tooltip for app nodes
+                            const tooltipContent = \`
+                                <div><strong>\${d.name}</strong></div>
+                                <div>Type: \${d.type}</div>
+                                <div>File: \${d.file || 'N/A'}</div>
+                                <div>App: \${d.app || 'unknown'}</div>
+                                \${d.view ? \`<div>Routes to: \${d.view}</div>\` : ''}
+                                \${d.parent ? \`<div>Class: \${d.parent}</div>\` : ''}
+                                <div class="tooltip-hint">(Click to open file)</div>
+                            \`;
+                            tooltip.style.left = \`\${event.pageX + 10}px\`;
+                            tooltip.style.top = \`\${event.pageY + 10}px\`;
+                            tooltip.style.opacity = 1;
+                            tooltip.innerHTML = tooltipContent;
+                        })
+                        .on('mouseout', function() {
+                            tooltip.style.opacity = 0;
+                        })
+                        .on('click', function(event, d) {
+                            if (d.type === 'app' || !d.file) return;
+                            vscode.postMessage({
+                                command: 'openFile',
+                                file: d.file
+                            });
+                        });
+                        
+                        simulation
+                            .nodes(allNodes)
+                            .on('tick', ticked);
+                        
+                        simulation.force('link')
+                            .links(allLinks);
+                        
+                        svg.call(zoom.transform, d3.zoomIdentity);
+                        
+                        function ticked() {
+                            link
+                                .attr('x1', d => d.source.x)
+                                .attr('y1', d => d.source.y)
+                                .attr('x2', d => d.target.x)
+                                .attr('y2', d => d.target.y);
                             
-                            // Drag functions
-                            function dragstarted(event, d) {
-                                if (!event.active) simulation.alphaTarget(0.3).restart();
-                                d.fx = d.x;
-                                d.fy = d.y;
-                            }
-                            
-                            function dragged(event, d) {
-                                d.fx = event.x;
-                                d.fy = event.y;
-                            }
-                            
-                            function dragended(event, d) {
-                                if (!event.active) simulation.alphaTarget(0);
-                                // Keep nodes in place after drag
-                                // If you want nodes to return to simulation, uncomment:
-                                // d.fx = null;
-                                // d.fy = null;
-                            }
+                            node.attr('transform', d => \`translate(\${d.x},\${d.y})\`);
+                        }
+                        
+                        function dragstarted(event, d) {
+                            if (!event.active) simulation.alphaTarget(0.3).restart();
+                            d.fx = d.x;
+                            d.fy = d.y;
+                        }
+                        
+                        function dragged(event, d) {
+                            d.fx = event.x;
+                            d.fy = event.y;
+                        }
+                        
+                        function dragended(event, d) {
+                            if (!event.active) simulation.alphaTarget(0);
+                            d.fx = d.x;
+                            d.fy = d.y;
                         }
                     }
-                })();
-            </script>
-        </body>
-        </html>`;
-    }
+                }
+            })();
+        </script>
+    </body>
+    </html>`;
+}
 
     public dispose() {
         DjangoVisualizerPanel.currentPanel = undefined;
@@ -662,226 +696,5 @@ class DjangoVisualizerPanel {
 // Helper function to get the Django scanner script
 function getDjangoScannerScript(): string {
     // This is the content of your original Python script
-    return `import ast
-from pathlib import Path
-import os
-import sys
-from datetime import datetime
-
-
-def parse_code(file_path):
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            tree = ast.parse(f.read())
-        return tree
-    except (SyntaxError, UnicodeDecodeError) as e:
-        return None
-
-
-def extract_functions_classes(tree):
-    if tree is None:
-        return []
-        
-    nodes = []
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            nodes.append({
-                "type": "Function" if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) else "Class",
-                "name": node.name,
-                "methods": [n.name for n in ast.walk(node)
-                           if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
-                           and n != node] if isinstance(node, ast.ClassDef) else []
-            })
-        # Extract urlpatterns
-        elif isinstance(node, ast.Assign):
-            for target in node.targets:
-                if isinstance(target, ast.Name) and target.id == "urlpatterns":
-                    url_patterns = []
-                    # Check if the value is a List or a BinOp (e.g., urlpatterns = [...] + [...])
-                    if isinstance(node.value, ast.List):
-                        url_list = node.value
-                    elif isinstance(node.value, ast.BinOp) and isinstance(node.value.op, ast.Add):
-                        # Handle cases like urlpatterns = [...] + [...]
-                        url_list = node.value.left if isinstance(node.value.left, ast.List) else node.value.right
-                    else:
-                        continue
-                    
-                    # Extract path() or url() calls from the list
-                    for elt in url_list.elts:
-                        if isinstance(elt, ast.Call):
-                            func_name = elt.func.attr if isinstance(elt.func, ast.Attribute) else elt.func.id
-                            if func_name in ('path', 'url'):
-                                # Extract the first argument (the URL pattern)
-                                if elt.args and isinstance(elt.args[0], ast.Constant):
-                                    url_pattern = elt.args[0].value
-                                    url_patterns.append(url_pattern)
-                    
-                    if url_patterns:
-                        nodes.append({
-                            "type": "URLPatterns",
-                            "name": "urlpatterns",
-                            "patterns": url_patterns
-                        })
-    return nodes
-
-
-def extract_urls(tree):
-    if tree is None:
-        return []
-        
-    urls = []
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Assign) and \\
-           len(node.targets) == 1 and \\
-           isinstance(node.targets[0], ast.Name) and \\
-           node.targets[0].id == 'urlpatterns' and \\
-           isinstance(node.value, ast.List):
-            
-            for element in node.value.elts:
-                if isinstance(element, ast.Call) and \\
-                   isinstance(element.func, ast.Name) and \\
-                   element.func.id in ('path', 're_path') and \\
-                   len(element.args) >= 2:
-                    
-                    url_pattern = None
-                    view_name = None
-                    
-                    # Get URL pattern (first argument)
-                    if isinstance(element.args[0], (ast.Constant, ast.Constant)):
-                        url_pattern = element.args[0].value if hasattr(element.args[0], 's') else element.args[0].value
-                    
-                    # Get view (second argument)
-                    if isinstance(element.args[1], ast.Name):
-                        view_name = element.args[1].id
-                    elif isinstance(element.args[1], ast.Call):
-                        # Handle cases like view.MyView.as_view()
-                        if isinstance(element.args[1].func, ast.Attribute) and element.args[1].func.attr == 'as_view':
-                            # This is a class-based view with as_view()
-                            parts = []
-                            current = element.args[1].func.value
-                            while isinstance(current, ast.Attribute):
-                                parts.append(current.attr)
-                                current = current.value
-                            if isinstance(current, ast.Name):
-                                parts.append(current.id)
-                            view_name = '.'.join(reversed(parts))
-                        else:
-                            view_name = str(element.args[1])  # Fallback
-                    elif isinstance(element.args[1], ast.Attribute):
-                        parts = []
-                        current = element.args[1]
-                        while isinstance(current, ast.Attribute):
-                            parts.append(current.attr)
-                            current = current.value
-                        if isinstance(current, ast.Name):
-                            parts.append(current.id)
-                        view_name = '.'.join(reversed(parts))
-                    elif isinstance(element.args[1], (ast.Str, ast.Constant)):
-                        view_name = element.args[1].s if hasattr(element.args[1], 's') else element.args[1].value
-                    
-                    if url_pattern and view_name:
-                        urls.append({
-                            "type": "URL Pattern",
-                            "pattern": url_pattern,
-                            "view": view_name,
-                            "decorators": [d.id for d in element.keywords 
-                                         if isinstance(d, ast.keyword) and 
-                                         isinstance(d.value, ast.Name)]
-                        })
-    return urls
-
-def find_django_apps():
-    """Find all Django apps in the current directory structure."""
-    django_apps = []
-    
-    # Add the current directory to check for settings.py
-    current_dir = Path('.')
-    
-    # Look for settings.py to find the project root
-    settings_files = list(current_dir.rglob("settings.py"))
-    if not settings_files:
-        print("⚠️ Could not find settings.py. Make sure you're running this from the Django project root.")
-        return []
-    
-    # Check all directories for apps (look for apps.py which is standard in Django apps)
-    for app_config in current_dir.rglob("apps.py"):
-        app_dir = app_config.parent
-        django_apps.append(app_dir)
-        
-    # If we didn't find any apps with apps.py, fall back to a simpler approach
-    if not django_apps:
-        for dir_path in current_dir.iterdir():
-            if dir_path.is_dir() and not dir_path.name.startswith('.') and not dir_path.name.startswith('__'):
-                # Check if directory contains Python files
-                has_py_files = any(file.suffix == '.py' for file in dir_path.iterdir() if file.is_file())
-                if has_py_files:
-                    django_apps.append(dir_path)
-    
-    return django_apps
-
-
-def generate_tree_file(app_paths, output_file="django_project_structure.txt"):
-    """Generate and write tree structure for multiple Django apps to a file."""
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(f"🌟 Django Project Structure - Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\\n")
-        f.write("=" * 80 + "\\n\\n")
-		
-        if not app_paths:
-            f.write("❌ No Django apps found!\\n")
-            print(f"No Django apps found! Output saved to {output_file}")
-            return
-            
-        f.write(f"🌲 Found {len(app_paths)} Django apps\\n")
-        print(f"Found {len(app_paths)} Django apps. Scanning...")
-        
-        for app_path in app_paths:
-            app_name = app_path.name
-            f.write(f"\\n\\n🌐 Django App: {app_name}\\n")
-            f.write("-" * 80 + "\\n")
-            
-            py_files = list(app_path.rglob("*.py"))
-            if not py_files:
-                f.write(f"  ⚠️ No Python files found in {app_name}\\n")
-                continue
-                
-            for py_file in py_files:
-                # Skip migration files to reduce clutter
-                if "migrations" in str(py_file) and py_file.name != "__init__.py":
-                    continue
-                    
-                relative_path = py_file.relative_to(Path('.'))
-                f.write(f"\\n📂 {relative_path}\\n")
-                
-                tree = parse_code(py_file)
-                items = extract_functions_classes(tree)
-                urls = extract_urls(tree)
-                
-                if not items and not urls:
-                    f.write(f"  📝 No classes or functions found\\n")
-                    continue
-                    
-                for item in items:
-                    if item["type"] == "Class":
-                        f.write(f"  🏛️ {item['name']}\\n")
-                        for method in item["methods"]:
-                            f.write(f"    └─ 🏷️ {method}()\\n")
-                    else:
-                        f.write(f"  🏷️ {item['name']}()\\n")
-
-                for url in urls:
-                    if url["type"] == "URL Pattern":
-                        f.write(f"  🌐 URL Pattern: {url['pattern']} -> {url['view']}\\n")
-                        if url["decorators"]:
-                            f.write(f"    Decorators: {', '.join(url['decorators'])}\\n")
-
-    print(f"Scan complete! Results saved to {output_file}")
-
-
-if __name__ == "__main__":
-    print('🚀 Django Project Structure Scanner - File Output')
-    apps = find_django_apps()
-    
-    # You can specify a custom output file name here
-    output_filename = "django_project_structure.txt"
-    generate_tree_file(apps, output_filename)`
+    return ``
 }
